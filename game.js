@@ -2,9 +2,7 @@ class Game {
     constructor(ctx) {
         this.ctx = ctx;
         this.interval = null;
-        this.player = [] //(ctx, x, y, w, h, fillStyle, lightness, hardness 1-5, xFriction 0.01 - 0.1)
-        this.pMarbleBall = new Ball(ctx,200,200,50,50,'blue', -1, 1, 0.01);
-        this.pBowlingBall = new Ball(ctx,400,200,50,50,'black', -0.5, 1, 0.01);
+        this.player = new Player(ctx, 50, 50, 50, 50, 'red'); //(ctx, x, y, w, h, fillStyle, lightness, hardness 1-5, xFriction 0.01 - 0.1)
     }
     start() {
         this.interval = setInterval(() => {
@@ -12,12 +10,6 @@ class Game {
             this.draw();
             this.move();
         }, 1000/60)
-    }
-    marbleBall() {
-        this.player = this.pMarbleBall;
-    }
-    bowling() {
-        this.player = this.pBowlingBall;
     }
     stop() {
         clearInterval(this.interval);
@@ -27,6 +19,18 @@ class Game {
     }
     move() {
         this.player.move();
+    }
+    right() {
+        this.player.right();
+    }
+    left() {
+        this.player.left();
+    }
+    up() {
+        this.player.up();
+    }
+    down() {
+        this.player.down();
     }
     clear() {
         this.ctx.clearRect(
