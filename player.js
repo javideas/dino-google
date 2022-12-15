@@ -7,6 +7,7 @@ class Player {
         this.h = h;
         this.vx = 0;
         this.vy = 0;
+        //this.speed = 1;
         this.fillStyle = fillStyle;
     }
     draw() {
@@ -34,19 +35,19 @@ class Player {
         }
     }
     right() {
-        this.vx += 0.2
+        this.vx += 1;
         this.x += this.vx;   
     }
     left() {
-        this.vx += -0.2
+        this.vx += -1;
         this.x += this.vx;
     }
     up() {
-        this.vy += -0.2
+        this.vy += -1;
         this.y += this.vy;
     }
     down() {
-        this.vy += 0.2
+        this.vy += 1;
         this.y += this.vy;   
     }
 }
