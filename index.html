@@ -5,25 +5,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/css/main.css">
 </head>
 <body>
-    <h1>Game</h1>
-    <canvas id="my-canvas" width="500px" height="500px"></canvas>
-    <div>
-        <button id="start-btn">START</button>
-        <hr>
+    <div id="divCanvas">
+        <!-- start little size is  width="550px" height="150px"-->
+        <canvas id="canvas"></canvas>
         <div>
-            <h1>increase/decrease vx/vy by 0.2</h1>
-            <button id="left-btn">LEFT</button>
-            <button id="right-btn">RIGHT</button>
-            <button id="up-btn">UP</button>
-            <button id="down-btn">DOWN</button>
+            <h1>Pulsa la barra espaciadora para jugar</h1>
         </div>
     </div>
-    <script src="player.js"></script>
-    <script src="enemy.js"></script>
-    <script src="game.js"></script>
-    <script src="script.js"></script>
+    <script src="assets/js/models/constants.js"></script>
+    <script src="assets/js/models/background.js"></script>
+    <script src="assets/js/models/cloud.js"></script>
+    <script src="assets/js/models/dino.js"></script>
+    <script src="assets/js/models/enemy.js"></script>
+    <script src="assets/js/models/canvasGame.js"></script>
+    <script src="assets/js/models/game.js"></script>
+    <script src="assets/js/main.js"></script>
 </body>
 </html>
