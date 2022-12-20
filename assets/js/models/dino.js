@@ -5,8 +5,8 @@ class Dino {
         this.y = 300;
         this.sx = 1682;
         this.sy = 0;
-        this.sw = 80; // 118;
-        this.sh = 92; // 96;
+        this.sw = 80;
+        this.sh = 92;
         this.swhrel = 1.8;
         this.dw = this.sw * this.swhrel;
         this.dh = this.sh * this.swhrel;
@@ -15,11 +15,12 @@ class Dino {
         this.ay = 2;
         this.img = new Image();
         this.img.src = "img/dino-sprites.png";
-
         this.img.frames = 2;
         this.img.framesIndex = 0;
         this.tick = 0;
 
+        this.devCol = false;
+        
         this.img.animations = {
             stopStanding: { //TODO: stand with ground, stand alone, stand blink, stand dead
                 sx: [
@@ -71,6 +72,22 @@ class Dino {
         this.ay = 2;
     }
     draw() {
+        this.boundingBoxes = [
+            { style: "red", x: this.x + 36, y: this.y + 110, w: this.dw/3 + 10, h: this.dh/3 },
+            { style: "orange", x: this.x + 18, y: this.y + 121, w: this.dw/8, h: this.dh/9 },
+            { style: "blue", x: this.x + 72, y: this.y + 11, w: this.dw/3 + 24, h: this.dh/3 - 1 },
+            { style: "green", x: this.x + 0, y: this.y + 65, w: this.dw/2 + 44, h: this.dh/3 }
+        ];
+        if (this.devCol) {
+            this.ctx.fillStyle = this.boundingBoxes[0].style;
+            this.ctx.fillRect(this.boundingBoxes[0].x, this.boundingBoxes[0].y, this.boundingBoxes[0].w, this.boundingBoxes[0].h);
+            this.ctx.fillStyle = this.boundingBoxes[1].style;
+            this.ctx.fillRect(this.boundingBoxes[1].x, this.boundingBoxes[1].y, this.boundingBoxes[1].w, this.boundingBoxes[1].h);
+            this.ctx.fillStyle = this.boundingBoxes[2].style;
+            this.ctx.fillRect(this.boundingBoxes[2].x, this.boundingBoxes[2].y, this.boundingBoxes[2].w, this.boundingBoxes[2].h);
+            this.ctx.fillStyle = this.boundingBoxes[3].style;
+            this.ctx.fillRect(this.boundingBoxes[3].x, this.boundingBoxes[3].y, this.boundingBoxes[3].w, this.boundingBoxes[3].h);
+        }
         this.ctx.imageSmoothingEnabled = false;
         this.ctx.drawImage(this.img, 
             this.sx, //inner move x
