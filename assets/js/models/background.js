@@ -2,6 +2,7 @@ class Background {
     constructor(ctx) {
         this.ctx = ctx;
         this.x0 = 0;
+        this.distanceBg = 0;
         this.y = 430;
         this.sx = 2;
         this.sy = 104;
@@ -22,38 +23,72 @@ class Background {
         this.img.framesIndexC = 3;
         this.tick = 0;
 
+        this.night = false;
         this.img.segments = [ //this.sx,
                     2400/4 + this.sx,
                     (2400/4 * 2) + this.sx,
                     (2400/4 * 3) + this.sx
                 ];
     }
+    invertColor(value) {
+        this.night = value;
+    }
     draw() {
-        this.ctx.drawImage(this.img, 
-            this.img.framesIndexA, //inner move x
-            this.sy, //inner move y 
-            this.sw, this.sh, //size of the cuts 
-            this.x0, // x pos
-            this.y, // y pos
-            this.dw, this.dh //size of the image outer
-        );
-        this.ctx.drawImage(this.img, 
-            this.img.framesIndexB, //inner move x, this.img.segments[0]
-            this.sy, //inner move y 
-            this.sw, this.sh, //size of the cuts
-            this.x1, // x pos
-            this.y, // y pos
-            this.dw, this.dh //size of the image outer
-        );
-        this.ctx.drawImage(this.img, 
-            this.img.framesIndexC, //inner move x, this.img.segments[0]
-            this.sy, //inner move y 
-            this.sw, this.sh, //size of the cuts
-            this.x2, // x pos
-            this.y, // y pos
-            this.dw, this.dh //size of the image outer
-        );
-        this.animate();
+        if (this.night === true) {
+            this.ctx.filter = "invert(100%)";
+            this.ctx.drawImage(this.img, 
+                this.img.framesIndexA, //inner move x
+                this.sy, //inner move y 
+                this.sw, this.sh, //size of the cuts 
+                this.x0, // x pos
+                this.y, // y pos
+                this.dw, this.dh //size of the image outer
+            );
+            this.ctx.drawImage(this.img, 
+                this.img.framesIndexB, //inner move x, this.img.segments[0]
+                this.sy, //inner move y 
+                this.sw, this.sh, //size of the cuts
+                this.x1, // x pos
+                this.y, // y pos
+                this.dw, this.dh //size of the image outer
+            );
+            this.ctx.drawImage(this.img, 
+                this.img.framesIndexC, //inner move x, this.img.segments[0]
+                this.sy, //inner move y 
+                this.sw, this.sh, //size of the cuts
+                this.x2, // x pos
+                this.y, // y pos
+                this.dw, this.dh //size of the image outer
+            );
+            this.animate();
+            this.ctx.filter = "none";
+        } else {
+            this.ctx.drawImage(this.img, 
+                this.img.framesIndexA, //inner move x
+                this.sy, //inner move y 
+                this.sw, this.sh, //size of the cuts 
+                this.x0, // x pos
+                this.y, // y pos
+                this.dw, this.dh //size of the image outer
+            );
+            this.ctx.drawImage(this.img, 
+                this.img.framesIndexB, //inner move x, this.img.segments[0]
+                this.sy, //inner move y 
+                this.sw, this.sh, //size of the cuts
+                this.x1, // x pos
+                this.y, // y pos
+                this.dw, this.dh //size of the image outer
+            );
+            this.ctx.drawImage(this.img, 
+                this.img.framesIndexC, //inner move x, this.img.segments[0]
+                this.sy, //inner move y 
+                this.sw, this.sh, //size of the cuts
+                this.x2, // x pos
+                this.y, // y pos
+                this.dw, this.dh //size of the image outer
+            );
+            this.animate();
+        }
     }
     animate(){
         if (this.x0 === this.ctx.canvas.width) {
@@ -67,6 +102,7 @@ class Background {
         }
     }
     move() {
+        this.distanceBg += this.vx;
         this.x0 += this.vx;
         this.x1 += this.vx;
         this.x2 += this.vx;

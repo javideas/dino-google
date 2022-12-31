@@ -2,7 +2,7 @@ class Dino {
     constructor(ctx) {
         this.ctx = ctx;
         this.x = 0;
-        this.y = 300;
+        this.resizeY = 300;
         this.sx = 1682;
         this.sy = 0;
         this.sw = 80;
@@ -10,15 +10,18 @@ class Dino {
         this.swhrel = 1.8;
         this.dw = this.sw * this.swhrel;
         this.dh = this.sh * this.swhrel;
+        this.y = (this.ctx.canvas.height * 0.6383);
         this.y0 = 465.6;
         this.vy = 0;
         this.ay = 2;
+        this.jumpFactor = 1.5;
+             
         this.img = new Image();
         this.img.src = "img/dino-sprites.png";
         this.img.frames = 2;
         this.img.framesIndex = 0;
         this.tick = 0;
-
+        this.night = false;
         this.devCol = false;
         
         this.img.animations = {
@@ -56,22 +59,20 @@ class Dino {
                 ]
             }
         }   
+    }  
+    move() {
+        this.vy += this.ay;
+        this.y += this.vy;
+        if (this.y + this.dh >= this.y0) {
+            this.y = this.y0 - this.dh;
+            this.vy = 0;
+          }
     }
-    reset() {
-        this.x = 0;
-        this.y = 300;
-        this.sx = 1682;
-        this.sy = 0;
-        this.sw = 80; // 118;
-        this.sh = 92; // 96;
-        this.swhrel = 1.8;
-        this.dw = this.sw * this.swhrel;
-        this.dh = this.sh * this.swhrel;
-        this.y0 = 465.6;
-        this.vy = 0;
-        this.ay = 2;
+    invertColor(value) {
+        this.night = value;
     }
     draw() {
+        this.canvasHeight = this.ctx.canvas.height;
         this.boundingBoxes = [
             { style: "red", x: this.x + 36, y: this.y + 110, w: this.dw/3 + 10, h: this.dh/3 },
             { style: "orange", x: this.x + 18, y: this.y + 121, w: this.dw/8, h: this.dh/9 },
@@ -89,14 +90,27 @@ class Dino {
             this.ctx.fillRect(this.boundingBoxes[3].x, this.boundingBoxes[3].y, this.boundingBoxes[3].w, this.boundingBoxes[3].h);
         }
         this.ctx.imageSmoothingEnabled = false;
-        this.ctx.drawImage(this.img, 
-            this.sx, //inner move x
-            this.sy, //inner move y
-            this.sw, this.sh, //size of the cuts
-            this.x, // x pos
-            this.y, // y pos
-            this.dw, this.dh //size of the image outer
-        );
+        if (this.night === true) {
+            this.ctx.filter = "invert(100%)";
+            this.ctx.drawImage(this.img, 
+                this.sx, //inner move x
+                this.sy, //inner move y
+                this.sw, this.sh, //size of the cuts
+                this.x, // x pos
+                this.y, // y pos
+                this.dw, this.dh //size of the image outer
+            );
+            this.ctx.filter = "none";
+        } else {
+            this.ctx.drawImage(this.img, 
+                this.sx, //inner move x
+                this.sy, //inner move y
+                this.sw, this.sh, //size of the cuts
+                this.x, // x pos
+                this.y, // y pos
+                this.dw, this.dh //size of the image outer
+            );
+        }
         this.animate();
     }
     animate() {
@@ -115,14 +129,6 @@ class Dino {
             this.sh = this.img.animations.stopStanding.sh[1];
         }
     }
-    move() {
-        this.vy += this.ay;
-        this.y += this.vy;
-        if (this.y + this.dh >= this.y0) {
-            this.y = this.y0 - this.dh;
-            this.vy = 0;
-          }
-    }
     jump() {
         if (this.y + this.dh === this.y0) {
             this.vy = -35;
@@ -138,6 +144,20 @@ class Dino {
         }
     }
 }
+// reset() {
+    //     this.x = 0;
+    //     this.y = 300;
+    //     this.sx = 1682;
+    //     this.sy = 0;
+    //     this.sw = 80; // 118;
+    //     this.sh = 92; // 96;
+    //     this.swhrel = 1.8;
+    //     this.dw = this.sw * this.swhrel;
+    //     this.dh = this.sh * this.swhrel;
+    //     this.y0 = 465.6;
+    //     this.vy = 0;
+    //     this.ay = 2;
+    // }
 // // this is dinosaur small
 // this.ctx.drawImage(this.img, 
 //     40, //cut in x

@@ -1,16 +1,19 @@
 class Game {
     constructor(ctx) {
         this.ctx = ctx;
+        this.canvasGame = new CanvasGame(ctx);
         this.bg = new Background(ctx);
         this.dino = new Dino(ctx);
-        this.cloud = new Cloud(ctx);
+        this.clouds= [];
         this.enemies = [];
         this.tick = 0;
-        this.tickDistance = 0;
+        this.tickCloud = 0;
         this.distanceDino = 0;
         this.enemLevel = 1;
         this.distanceEnem = 100;
+        this.distanceCloud = 100;
         this.vx = 0;
+        this.canvasGame = new CanvasGame(ctx);
     }
     start() { //TODO: clouds not included
         this.initListeners();
@@ -18,21 +21,17 @@ class Game {
         this.interval = setInterval(() => {
             this.clear();
             this.draw();
-            this.checkCollisions()
+            this.checkDistance();
+            this.checkCollisions();
+            this.addCloud();
             this.addEnemy();
             this.move();
             this.getDistance();
-            this.checkDistance();
             this.uiDistance();
         }, 1000/60)
     }
     getDistance() {
-        this.tickDistance++;
-        if (this.tickDistance > 6) {
-            this.distanceDino++;
-            this.tickDistance = 0;
-        }
-        // this.checkDistance(this.distanceDino);
+        this.distanceDino = Math.floor(this.bg.distanceBg / 100) * -1;
     }
     uiDistance() { // TODO: High puntuation
         this.ctx.font = '48px "Press Start 2P"'; //ctx.save() ctx.scale(2, 2); ctx.restore()
@@ -41,34 +40,56 @@ class Game {
         function addLeadingZeros(num, totalLength) {
             return String(num).padStart(totalLength, '0');
         }
-        this.ctx.fillText(addLeadingZeros(this.distanceDino, 5), canvas.width * 0.9, 50);
+        this.ctx.fillText(addLeadingZeros(this.distanceDino, 5), canvas.width * 0.86, 50);
     }
     checkDistance() {
         if (this.distanceDino < 35) {
             this.distanceEnem = 100;
+            this.distanceCloud = 100;
+            this.canvasGame.invertColor(true)
+            this.bg.invertColor(true);
+            this.clouds.forEach(c => c.invertColor(true));
+            this.dino.invertColor(true);
+            this.enemies.forEach(e => e.invertColor(true));
             this.setSpeed(-15);
             this.enemLevel = 1;
         } else if (this.distanceDino > 34 && this.distanceDino < 100) {
             this.distanceEnem = 100;
+            this.distanceCloud = 100;
+            this.canvasGame.invertColor(false);
+            this.clouds.forEach(c => c.invertColor(false));
+            this.bg.invertColor(false);
+            this.dino.invertColor(false);
+            this.enemies.forEach(e => e.invertColor(false));
             this.setSpeed(-20)
             this.enemLevel = 2;
         } else if (this.distanceDino > 99 && this.distanceDino < 150) {
-            const randomsito = Math.floor(Math.random() * (90-50) + 50);
-            this.distanceEnem = randomsito;
-            console.log(randomsito);
+            const randomEnem = Math.floor(Math.random() * (90-50) + 50);
+            const randomCloud = Math.floor(Math.random() * (90-50) + 50);
+            this.distanceEnem = randomEnem;
+            this.distanceCloud = randomCloud;
             this.setSpeed(-25);
             this.enemLevel = 2;
         } else if (this.distanceDino > 149 && this.distanceDino < 200) {
-            const randomsito = Math.floor(Math.random() * (90-40) + 40);
-            this.distanceEnem = randomsito;
-            console.log(randomsito);
+            const randomEnem = Math.floor(Math.random() * (90-40) + 40);
+            const randomCloud = Math.floor(Math.random() * (90-30) + 30);
+            this.distanceEnem = randomEnem;
+            this.distanceCloud = randomCloud;
             this.setSpeed(-30);
             this.enemLevel = 2;
-        } else if (this.distanceDino > 199) {
-            const randomsito = Math.floor(Math.random() * (90-40) + 40);
-            this.distanceEnem = randomsito;
-            console.log(randomsito);
+        } else if (this.distanceDino > 199 && this.distanceDino < 250) {
+            const randomEnem = Math.floor(Math.random() * (90-40) + 40);
+            const randomCloud = Math.floor(Math.random() * (90-30) + 30);
+            this.distanceEnem = randomEnem;
+            this.distanceCloud = randomCloud;
             this.setSpeed(-35);
+            this.enemLevel = 2;
+        } else if (this.distanceDino > 249) {
+            const randomEnem = Math.floor(Math.random() * (90-40) + 40);
+            const randomCloud = Math.floor(Math.random() * (90-30) + 30);
+            this.distanceEnem = randomEnem;
+            this.distanceCloud = randomCloud;
+            this.setSpeed(-45);
             this.enemLevel = 2;
         }
     }
@@ -76,13 +97,13 @@ class Game {
         this.bg.vx = speedVal;
         this.enemies.forEach(e => {
             e.enemyId === 0 ?  e.vx = speedVal : e.vx = speedVal;
-            });
-    }
-    night() {
-        this.ctx.filter = 'invert(1)';
-    }
+        });
+        this.clouds.forEach(c => {
+            c.vx = speedVal / 2;
+        });
+    }  
     gameOver() {
-        this.stop()
+        this.stop();
     }
     stop() {
         clearInterval(this.interval);
@@ -98,19 +119,20 @@ class Game {
         this.bg = new Background(ctx);
         this.dino = new Dino(ctx);
         this.enemies = [];
+        this.clouds = [];
         this.tick = 0;
         this.start();
-        this.tickDistance = 0;
         this.distanceDino = 0; 
     }
     clear() {
-        this.enemies = this.enemies.filter(e => e.isVisible())
+        this.enemies = this.enemies.filter(e => e.isVisible());
+        this.clouds = this.clouds.filter(e => e.isVisible());
         this.ctx.clearRect(
             0,
             0,
             this.ctx.canvas.width,
             this.ctx.canvas.height
-            )
+            );
     }
     checkCollisions() {
         const din = this.dino;
@@ -133,31 +155,41 @@ class Game {
         }
     }
     addEnemy() {
-        this.tick++
-        if (this.tick >= this.distanceEnem) { //90
+        this.tick++;
+        if (this.tick >= this.distanceEnem) { //(this.tick >= this.distanceEnem)
             const enem = new Enemy(this.ctx);
             switch(this.enemLevel) {
                 case 1:
                     enem.enemyId = 0;
                     break;
                 case 2:
-                    enem.enemyId = Math.floor(Math.random() * 2);
+                    enem.enemyId = Math.floor(Math.random() * enem.img.enemies.length);
                     break;
             }
             this.enemies.push(enem);
             this.tick = 0;
         }
     }
+    addCloud() {
+        this.tickCloud++;
+        if (this.tickCloud >= this.distanceCloud) { // this.distanceEnem 100
+            const cloud = new Cloud(this.ctx);
+            this.clouds.push(cloud);
+            this.tickCloud = 0;
+        }
+    }    
     draw() {
+        this.canvasGame.draw();
         this.bg.draw();
+        this.clouds.forEach(c => c.draw());
         this.dino.draw();
-        this.enemies.forEach(e => e.draw())
-        // this.cloud.draw();
+        this.enemies.forEach(e => e.draw());
     }
     move() {
         this.bg.move();
         this.dino.move();
-        this.enemies.forEach(e => e.move())
+        this.enemies.forEach(e => e.move());
+        this.clouds.forEach(c => c.move());
     }
     // resize() {
     //     addEventListener("resize", (event) => {

@@ -2,12 +2,12 @@ class Cloud { //TODO: include in game.js
     constructor(ctx) {
         this.ctx = ctx
     
-        this.x = 0; //this.ctx.canvas.width - 100;
+        this.x = this.ctx.canvas.width;
         this.y = 0;//350;
         this.sx = 1682;
-        this.sy = 0;
+        this.sy = 2;
         this.sw = 92; // 118;
-        this.sh = 92; // 96;
+        this.sh = 27; // 96;
         this.swhrel = 1.8;
         this.dw = this.sw * this.swhrel;
         this.dh = this.sh * this.swhrel;
@@ -20,24 +20,43 @@ class Cloud { //TODO: include in game.js
         this.img.frames = 2;
         this.img.framesIndex = 0;
         this.tick = 0;
+
+        this.yPos = [0, 100, 250];
+        this.y0 = this.yPos[Math.floor(Math.random() * this.yPos.length)];//350;
+
+        this.night = false;
+    }
+    invertColor(value) {
+        this.night = value;
     }
     draw() {
-        this.ctx.fillStyle = "red";
-        this.ctx.fillRect(this.x, this.y, this.dw, this.dh)
-        this.ctx.drawImage(this.img, 
-            166, //cut in x
-            0, //cut in y
-            this.sw, this.sh, //size of the image inner
-            this.x, // x pos
-            this.y, // y pos
-            this.dw, this.dh //size of the image outer
-        );
+        if (this.night === true) {
+            this.ctx.filter = "invert(100%)";
+            this.ctx.drawImage(this.img, 
+                166, //cut in sx
+                this.sy, //cut in sy
+                this.sw, this.sh, //size of the image inner
+                this.x, // x pos
+                this.y0, // y pos
+                this.dw, this.dh //size of the image outer
+            );
+            this.ctx.filter = "none";
+        } else {
+            this.ctx.drawImage(this.img, 
+                166, //cut in sx
+                this.sy, //cut in sy
+                this.sw, this.sh, //size of the image inner
+                this.x, // x pos
+                this.y0, // y pos
+                this.dw, this.dh //size of the image outer
+            );
+        }
     }
     move() {
-        // this.x += this.vx;
-        // if (this.x <= -this.dw) {
-        //     this.x = 0;
-        // }
+        this.x += this.vx;
+        if (this.x <= -this.dw) {
+            this.x = this.ctx.canvas.width;
+        }
     }
     isVisible() {
       return this.x >= 0;

@@ -15,7 +15,7 @@ class Enemy { //TODO: adapt bounding box tpedoractyl
                 sh: [70],
                 dw: [60],
                 dh: [127],
-                y: [350]
+                y: [345]
             },
             { //1 pterodactyl
                 sx: [
@@ -46,8 +46,52 @@ class Enemy { //TODO: adapt bounding box tpedoractyl
                     this.y0  + 0,
                     this.y0 - 29
                 ]
-            }
-            
+            },
+            { //2 miniCactus
+                sx: [482],
+                sy: [4],
+                sw: [64],
+                sh: [70],
+                dw: [128],
+                dh: [127],
+                y: [345]
+            },
+            { //3 miniCactus
+                sx: [550],
+                sy: [4],
+                sw: [98],
+                sh: [70],
+                dw: [196],
+                dh: [127],
+                y: [345]
+            },
+            { //4 1BigCactus
+                sx: [654],
+                sy: [4],
+                sw: [46],
+                sh: [96],
+                dw: [110],
+                dh: [244],
+                y: [230]
+            },
+            { //5 2BigCactus
+                sx: [704],
+                sy: [4],
+                sw: [96],
+                sh: [96],
+                dw: [160],
+                dh: [244],
+                y: [230]
+            },
+            { //5 3BigCactus
+                sx: [804],
+                sy: [4],
+                sw: [146],
+                sh: [96],
+                dw: [210],
+                dh: [244],
+                y: [230]
+            }  
         ]
         this.enemyId = 0;
         this.img.frames = 2;
@@ -62,10 +106,13 @@ class Enemy { //TODO: adapt bounding box tpedoractyl
         this.dh = this.sh * this.swhrel;
         this.vx = -10;
 
+        this.night = false;
         this.devCol = false;
     }
+    invertColor(value) {
+        this.night = value;
+    }
     draw() {
-
         this.y = this.img.enemies[this.enemyId].y[this.img.framesIndex];
         this.dw = this.img.enemies[this.enemyId].dw[this.img.framesIndex];
         this.dh = this.img.enemies[this.enemyId].dh[this.img.framesIndex];
@@ -78,16 +125,31 @@ class Enemy { //TODO: adapt bounding box tpedoractyl
                 this.img.enemies[1].dh[this.img.framesIndex]
                 );
         }
-        this.ctx.drawImage(this.img, 
-            this.img.enemies[this.enemyId].sx[this.img.framesIndex], //cut in x
-            this.img.enemies[this.enemyId].sy[this.img.framesIndex], //cut in y
-            this.img.enemies[this.enemyId].sw[this.img.framesIndex], //w size of the image inner
-            this.img.enemies[this.enemyId].sh[this.img.framesIndex], //h size of the image inner
-            this.x, // x pos
-            this.img.enemies[this.enemyId].y[this.img.framesIndex], // y pos
-            this.img.enemies[this.enemyId].dw[this.img.framesIndex], //w size of the image outer
-            this.img.enemies[this.enemyId].dh[this.img.framesIndex] //h size of the image outer
-        );
+        if (this.night === true) {
+            this.ctx.filter = "invert(100%)";
+            this.ctx.drawImage(this.img, 
+                this.img.enemies[this.enemyId].sx[this.img.framesIndex], //cut in x
+                this.img.enemies[this.enemyId].sy[this.img.framesIndex], //cut in y
+                this.img.enemies[this.enemyId].sw[this.img.framesIndex], //w size of the image inner
+                this.img.enemies[this.enemyId].sh[this.img.framesIndex], //h size of the image inner
+                this.x, // x pos
+                this.img.enemies[this.enemyId].y[this.img.framesIndex], // y pos
+                this.img.enemies[this.enemyId].dw[this.img.framesIndex], //w size of the image outer
+                this.img.enemies[this.enemyId].dh[this.img.framesIndex] //h size of the image outer
+            );
+            this.ctx.filter = "none";
+        } else {
+            this.ctx.drawImage(this.img, 
+                this.img.enemies[this.enemyId].sx[this.img.framesIndex], //cut in x
+                this.img.enemies[this.enemyId].sy[this.img.framesIndex], //cut in y
+                this.img.enemies[this.enemyId].sw[this.img.framesIndex], //w size of the image inner
+                this.img.enemies[this.enemyId].sh[this.img.framesIndex], //h size of the image inner
+                this.x, // x pos
+                this.img.enemies[this.enemyId].y[this.img.framesIndex], // y pos
+                this.img.enemies[this.enemyId].dw[this.img.framesIndex], //w size of the image outer
+                this.img.enemies[this.enemyId].dh[this.img.framesIndex] //h size of the image outer
+            );
+        }
         this.animate();
     }
     animate() {
