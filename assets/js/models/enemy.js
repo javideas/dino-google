@@ -1,6 +1,6 @@
 class Enemy { //TODO: adapt bounding box tpedoractyl
     constructor(ctx) {
-        this.ctx = ctx
+        this.ctx = ctx;
         this.x = this.ctx.canvas.width;
         this.y = 0;
         this.yPos = [170, 270, 330];
@@ -61,7 +61,7 @@ class Enemy { //TODO: adapt bounding box tpedoractyl
                 sy: [4],
                 sw: [98],
                 sh: [70],
-                dw: [196],
+                dw: [236],
                 dh: [127],
                 y: [345]
             },
@@ -88,7 +88,7 @@ class Enemy { //TODO: adapt bounding box tpedoractyl
                 sy: [4],
                 sw: [146],
                 sh: [96],
-                dw: [210],
+                dw: [260],
                 dh: [244],
                 y: [230]
             }  
@@ -170,6 +170,6 @@ class Enemy { //TODO: adapt bounding box tpedoractyl
         }
     }
     isVisible() {
-      return this.x >= 0;
+        return this.x >= 0;
     }
   }

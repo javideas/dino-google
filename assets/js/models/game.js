@@ -5,9 +5,12 @@ class Game {
         this.bg = new Background(ctx);
         this.dino = new Dino(ctx);
         this.clouds= [];
+        this.moon = new Moon(ctx);
+        this.isMoonBool = false;
         this.enemies = [];
         this.tick = 0;
         this.tickCloud = 0;
+        this.tickMoon = 0;
         this.distanceDino = 0;
         this.enemLevel = 1;
         this.distanceEnem = 100;
@@ -21,6 +24,7 @@ class Game {
         this.interval = setInterval(() => {
             this.clear();
             this.draw();
+            this.addMoon(this.isMoonBool);
             this.checkDistance();
             this.checkCollisions();
             this.addCloud();
@@ -43,27 +47,20 @@ class Game {
         this.ctx.fillText(addLeadingZeros(this.distanceDino, 5), canvas.width * 0.86, 50);
     }
     checkDistance() {
-        if (this.distanceDino < 35) {
+        if (this.distanceDino < 15) {
+            this.isDay()
             this.distanceEnem = 100;
             this.distanceCloud = 100;
-            this.canvasGame.invertColor(true)
-            this.bg.invertColor(true);
-            this.clouds.forEach(c => c.invertColor(true));
-            this.dino.invertColor(true);
-            this.enemies.forEach(e => e.invertColor(true));
             this.setSpeed(-15);
             this.enemLevel = 1;
-        } else if (this.distanceDino > 34 && this.distanceDino < 100) {
+        } else if (this.distanceDino > 14 && this.distanceDino < 100) {
+            this.isNight();
             this.distanceEnem = 100;
             this.distanceCloud = 100;
-            this.canvasGame.invertColor(false);
-            this.clouds.forEach(c => c.invertColor(false));
-            this.bg.invertColor(false);
-            this.dino.invertColor(false);
-            this.enemies.forEach(e => e.invertColor(false));
             this.setSpeed(-20)
             this.enemLevel = 2;
         } else if (this.distanceDino > 99 && this.distanceDino < 150) {
+            this.isDay()
             const randomEnem = Math.floor(Math.random() * (90-50) + 50);
             const randomCloud = Math.floor(Math.random() * (90-50) + 50);
             this.distanceEnem = randomEnem;
@@ -71,6 +68,7 @@ class Game {
             this.setSpeed(-25);
             this.enemLevel = 2;
         } else if (this.distanceDino > 149 && this.distanceDino < 200) {
+            this.isNight();
             const randomEnem = Math.floor(Math.random() * (90-40) + 40);
             const randomCloud = Math.floor(Math.random() * (90-30) + 30);
             this.distanceEnem = randomEnem;
@@ -78,6 +76,7 @@ class Game {
             this.setSpeed(-30);
             this.enemLevel = 2;
         } else if (this.distanceDino > 199 && this.distanceDino < 250) {
+            this.isDay()
             const randomEnem = Math.floor(Math.random() * (90-40) + 40);
             const randomCloud = Math.floor(Math.random() * (90-30) + 30);
             this.distanceEnem = randomEnem;
@@ -93,6 +92,22 @@ class Game {
             this.enemLevel = 2;
         }
     }
+    isNight() {
+        this.isMoonBool = true;
+        this.canvasGame.invertColor(true);
+        this.clouds.forEach(c => c.invertColor(true));
+        this.bg.invertColor(true);
+        this.dino.invertColor(true);
+        this.enemies.forEach(e => e.invertColor(true));
+    }
+    isDay() {
+        this.isMoonBool = false;
+        this.canvasGame.invertColor(false);
+        this.clouds.forEach(c => c.invertColor(false));
+        this.bg.invertColor(false);
+        this.dino.invertColor(false);
+        this.enemies.forEach(e => e.invertColor(false));
+    }
     setSpeed(speedVal) {
         this.bg.vx = speedVal;
         this.enemies.forEach(e => {
@@ -101,6 +116,7 @@ class Game {
         this.clouds.forEach(c => {
             c.vx = speedVal / 2;
         });
+        this.moon.vx = speedVal / 5;
     }  
     gameOver() {
         this.stop();
@@ -126,7 +142,7 @@ class Game {
     }
     clear() {
         this.enemies = this.enemies.filter(e => e.isVisible());
-        this.clouds = this.clouds.filter(e => e.isVisible());
+        this.clouds = this.clouds.filter(c => c.isVisible());
         this.ctx.clearRect(
             0,
             0,
@@ -177,7 +193,18 @@ class Game {
             this.clouds.push(cloud);
             this.tickCloud = 0;
         }
-    }    
+    } 
+    addMoon(value) {
+        if (value === true) {
+            this.moon.draw(value);
+            this.moon.move(value);
+            value = this.moon.moonFinish;
+        } else {
+            this.moon.draw(value);
+            this.moon.move(value);
+            value = this.moon.moonFinish;
+        }
+    }
     draw() {
         this.canvasGame.draw();
         this.bg.draw();

@@ -3,7 +3,6 @@ const ctx = canvas.getContext('2d');
 
 const game = new Game(ctx);
 const canvasGame = new CanvasGame(ctx);
-const dino = new Dino(ctx);
 canvasGame.start();
 game.start();
 // document.addEventListener("keydown", (event) => {
