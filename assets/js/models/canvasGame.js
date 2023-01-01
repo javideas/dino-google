@@ -3,6 +3,8 @@ class CanvasGame {
         this.ctx = ctx;
         this.whrel = 1920/480;
         this.night = false;
+        this.valColor = 255;
+        this.progVal = 3;
     }
     start() {
         this.ctx.canvas.width = window.innerWidth - 40;
@@ -17,10 +19,19 @@ class CanvasGame {
     }
     draw() {
         if (this.night === true) {
-            this.ctx.fillStyle = "black";
+            if (this.valColor >= 0) { // transition from day to night
+                this.valColor -= this.progVal;
+            }
+            this.ctx.fillStyle = `rgb(${this.valColor},${this.valColor},${this.valColor})`;
             this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-        } else {
-            this.ctx.fillStyle = "white";
+        } else if (this.night === false) {
+            if (this.valColor < 255) { // transition from night to day
+                console.log("canvas draw");
+                console.log("valColor ", this.valColor);
+                console.log("progVal ", this.progVal);
+                this.valColor += this.progVal;
+            }
+            this.ctx.fillStyle = `rgb(${this.valColor},${this.valColor},${this.valColor})`;
             this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
         }
     }

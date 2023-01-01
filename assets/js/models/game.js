@@ -6,7 +6,6 @@ class Game {
         this.dino = new Dino(ctx);
         this.clouds= [];
         this.moon = new Moon(ctx);
-        this.isMoonBool = false;
         this.enemies = [];
         this.tick = 0;
         this.tickCloud = 0;
@@ -18,13 +17,14 @@ class Game {
         this.vx = 0;
         this.canvasGame = new CanvasGame(ctx);
     }
-    start() { //TODO: clouds not included
+    start() { //TODO: random(random(cactus) vs pterodactyl); distance position and every 100 blink; sound; inmunity; fireball; 
+        this.moon.restart();
         this.initListeners();
         this.spaceBool = true;
         this.interval = setInterval(() => {
             this.clear();
+            this.isDay();
             this.draw();
-            this.addMoon(this.isMoonBool);
             this.checkDistance();
             this.checkCollisions();
             this.addCloud();
@@ -48,7 +48,6 @@ class Game {
     }
     checkDistance() {
         if (this.distanceDino < 15) {
-            this.isDay()
             this.distanceEnem = 100;
             this.distanceCloud = 100;
             this.setSpeed(-15);
@@ -60,7 +59,6 @@ class Game {
             this.setSpeed(-20)
             this.enemLevel = 2;
         } else if (this.distanceDino > 99 && this.distanceDino < 150) {
-            this.isDay()
             const randomEnem = Math.floor(Math.random() * (90-50) + 50);
             const randomCloud = Math.floor(Math.random() * (90-50) + 50);
             this.distanceEnem = randomEnem;
@@ -68,7 +66,6 @@ class Game {
             this.setSpeed(-25);
             this.enemLevel = 2;
         } else if (this.distanceDino > 149 && this.distanceDino < 200) {
-            this.isNight();
             const randomEnem = Math.floor(Math.random() * (90-40) + 40);
             const randomCloud = Math.floor(Math.random() * (90-30) + 30);
             this.distanceEnem = randomEnem;
@@ -76,7 +73,6 @@ class Game {
             this.setSpeed(-30);
             this.enemLevel = 2;
         } else if (this.distanceDino > 199 && this.distanceDino < 250) {
-            this.isDay()
             const randomEnem = Math.floor(Math.random() * (90-40) + 40);
             const randomCloud = Math.floor(Math.random() * (90-30) + 30);
             this.distanceEnem = randomEnem;
@@ -93,7 +89,7 @@ class Game {
         }
     }
     isNight() {
-        this.isMoonBool = true;
+        this.moon.addMoon = true;
         this.canvasGame.invertColor(true);
         this.clouds.forEach(c => c.invertColor(true));
         this.bg.invertColor(true);
@@ -101,12 +97,13 @@ class Game {
         this.enemies.forEach(e => e.invertColor(true));
     }
     isDay() {
-        this.isMoonBool = false;
-        this.canvasGame.invertColor(false);
-        this.clouds.forEach(c => c.invertColor(false));
-        this.bg.invertColor(false);
-        this.dino.invertColor(false);
-        this.enemies.forEach(e => e.invertColor(false));
+        if (this.moon.addMoon === false) {
+            this.canvasGame.invertColor(false);
+            this.clouds.forEach(c => c.invertColor(false));
+            this.bg.invertColor(false);
+            this.dino.invertColor(false);
+            this.enemies.forEach(e => e.invertColor(false));
+        }
     }
     setSpeed(speedVal) {
         this.bg.vx = speedVal;
@@ -137,8 +134,9 @@ class Game {
         this.enemies = [];
         this.clouds = [];
         this.tick = 0;
+        this.distanceDino = 0;
+        this.moon.restart();
         this.start();
-        this.distanceDino = 0; 
     }
     clear() {
         this.enemies = this.enemies.filter(e => e.isVisible());
@@ -194,20 +192,10 @@ class Game {
             this.tickCloud = 0;
         }
     } 
-    addMoon(value) {
-        if (value === true) {
-            this.moon.draw(value);
-            this.moon.move(value);
-            value = this.moon.moonFinish;
-        } else {
-            this.moon.draw(value);
-            this.moon.move(value);
-            value = this.moon.moonFinish;
-        }
-    }
     draw() {
         this.canvasGame.draw();
         this.bg.draw();
+        this.moon.draw();
         this.clouds.forEach(c => c.draw());
         this.dino.draw();
         this.enemies.forEach(e => e.draw());
@@ -218,13 +206,4 @@ class Game {
         this.enemies.forEach(e => e.move());
         this.clouds.forEach(c => c.move());
     }
-    // resize() {
-    //     addEventListener("resize", (event) => {
-    //         // Get the current width and height of the canvas
-    //         // Update the dino's dimensions based on the canvas size
-    //         const canvasWidth = window.innerWidth;
-    //         const canvasHeight = window.innerHeight;
-    //         dino.resize(canvasWidth, canvasHeight);
-    //     });
-    // }
 }
