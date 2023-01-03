@@ -8,16 +8,7 @@ class Enemy { //TODO: adapt bounding box tpedoractyl
         this.img = new Image();
         this.img.src = "img/dino-sprites.png";
         this.img.enemies = [
-            { //0 miniCactus
-                sx: [448],
-                sy: [4],
-                sw: [30],
-                sh: [70],
-                dw: [60],
-                dh: [127],
-                y: [345]
-            },
-            { //1 pterodactyl
+            { //0 pterodactyl
                 sx: [
                     260,
                     352
@@ -46,6 +37,15 @@ class Enemy { //TODO: adapt bounding box tpedoractyl
                     this.y0  + 0,
                     this.y0 - 29
                 ]
+            },
+            { //1 miniCactus
+                sx: [448],
+                sy: [4],
+                sw: [30],
+                sh: [70],
+                dw: [60],
+                dh: [127],
+                y: [345]
             },
             { //2 miniCactus
                 sx: [482],
@@ -153,7 +153,7 @@ class Enemy { //TODO: adapt bounding box tpedoractyl
         this.animate();
     }
     animate() {
-        if (this.enemyId === 1) { //if enemyId is pterodactyl then animate
+        if (this.enemyId === 0) { //if enemyId is pterodactyl then animate
             if (this.tick++ > 7) {
                 this.tick = 0;
                 this.img.framesIndex++;

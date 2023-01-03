@@ -26,9 +26,6 @@ class CanvasGame {
             this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
         } else if (this.night === false) {
             if (this.valColor < 255) { // transition from night to day
-                console.log("canvas draw");
-                console.log("valColor ", this.valColor);
-                console.log("progVal ", this.progVal);
                 this.valColor += this.progVal;
             }
             this.ctx.fillStyle = `rgb(${this.valColor},${this.valColor},${this.valColor})`;

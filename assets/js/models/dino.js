@@ -1,6 +1,7 @@
 class Dino {
     constructor(ctx) {
         this.ctx = ctx;
+        this.audioJump = new Audio("audio/dinoJump.mp3");
         this.x = 0;
         this.resizeY = 300;
         this.sx = 1682;
@@ -130,6 +131,7 @@ class Dino {
         }
     }
     jump() {
+        this.audioJump.play();
         if (this.y + this.dh === this.y0) {
             this.vy = -35;
         }

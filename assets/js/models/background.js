@@ -9,7 +9,7 @@ class Background {
         this.sw = 2400/4; // 118;
         this.sh = 24; // 96;
         this.swhrel = 1.8;
-        this.dw = this.sw * this.swhrel;
+        this.dw = this.sw * this.swhrel + this.sx;
         this.dh = this.sh * this.swhrel;
         this.x1 = this.dw;
         this.x2 = this.dw * 2;

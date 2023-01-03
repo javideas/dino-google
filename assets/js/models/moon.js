@@ -89,10 +89,6 @@ class Moon {
             }
         }
     }
-    // moonFinish() {
-    //     this.addMoon = false;
-    //     return this.addMoon;
-    // }
     move() {
         this.x += this.vx;
         if (this.x <= -this.dw) {
