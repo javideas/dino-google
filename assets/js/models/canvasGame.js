@@ -4,7 +4,7 @@ class CanvasGame {
         this.whrel = 1920/480;
         this.night = false;
         this.valColor = 255;
-        this.progVal = 3;
+        this.progVal = 1;
     }
     start() {
         this.ctx.canvas.width = window.innerWidth - 40;

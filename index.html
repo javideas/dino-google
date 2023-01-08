@@ -3,20 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=1.0;" />
+    <title>Dino by Javideas</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/keyboard-css@1.2.4/dist/css/main.min.css" />
     <link rel="stylesheet" href="assets/css/main.css">
 </head>
 <body>
+    <div class="keyboard"></div>
     <div id="divCanvas">
         <!-- start little size is  width="550px" height="150px"-->
         <canvas id="canvas"></canvas>
-        <div>
-            <h1>Press space bar to play and to jump.</h1>
+        <div class="instructions">
+            <h1>Press space bar to play and to jump 🦘.
+                <br>
+                ⬇ Down Arrow to crouch.
+                <br>
+                F key to shoot Fireballs! 🔥
+                <br>
+                (carefull, the are hot)
+            </h1>
         </div>
     </div>
     <script src="assets/js/models/constants.js"></script>
     <script src="assets/js/models/canvasGame.js"></script>
+    <script src="assets/js/models/bullet.js"></script>
     <script src="assets/js/models/background.js"></script>
     <script src="assets/js/models/moon.js"></script>
     <script src="assets/js/models/cloud.js"></script>

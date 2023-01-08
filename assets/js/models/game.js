@@ -26,8 +26,17 @@ class Game {
         this.enemLevel = 1;
         this.vx = 0;
         this.stopBool = false;
+
+        this.setScore = false;
+
+        this.letters = [];
+        this.initials = "";
+        this.usePHP = false;
+        this.currentScore = 0;
+        
     }
-    start() { //TODO: check addMoon; inmunity; fireball;
+    start() { // inmunity; fireball;
+        this.currentScore = 0;
         this.moon.restart();
         this.initListeners();
         this.spaceBool = true;
@@ -36,7 +45,6 @@ class Game {
             this.isDay();
             this.draw();
             this.getDistance();
-            this.uiPanel();
             this.uiDistShow(this.uiBlinkBool);
             this.uiDistBlink(this.uiBlinkBool);
             this.checkDistance();
@@ -44,25 +52,182 @@ class Game {
             this.addCloud();
             this.addEnemy();
             this.move();
+            this.uiPanel();
         }, 1000/60)
     }
     getDistance() {
         this.distanceDino = Math.floor(this.bg.distanceBg / 100) * -1;
     }
-    uiPanel() {
-        this.ctx.font = '38px "Press Start 2P"'; //ctx.save() ctx.scale(2, 2); ctx.restore()
+    updateScores(highScores) {
+        if (highScores && this.usePHP) {
+            ctx.textAlign = "center";
+            for (var i = 0; i < highScores.length; i++) {
+              var text = highScores[i]['initials'] + ' ' + highScores[i]['distance'];
+              ctx.fillText(text, canvas.width / 2, 50 + (i * 40));
+           }
+        }
+    }
+    uiDistances() {
+        this.ctx.font = '38px "Press Start 2P"';
         this.ctx.textAlign = "center";
         this.ctx.fillStyle = "grey";
         this.ctx.fillText("HI", canvas.width * 0.68, 80);
         this.ctx.fillText(this.addLeadingZeros(this.higherDist, 5), canvas.width * 0.78, 80);
+    }    
+    uiPanel(highScores) {
+        this.uiDistances();
+        this.updateScores(highScores);
         
-        if (this.distanceDino >= this.uiCheckPoint &&
-            this.distanceDino % this.uiCheckPoint === 0) {
-                this.uiBlinkDist = this.distanceDino;
-                this.audioCheck.play();
-                this.uiBlinkBool = true;
-            }
+        if (this.distanceDino >= this.uiCheckPoint && this.distanceDino % this.uiCheckPoint === 0) {
+            this.uiBlinkDist = this.distanceDino;
+            this.audioCheck.play();
+            this.uiBlinkBool = true;
     }
+    }
+    gameOver() {
+        // if (this.usePHP === false) {
+        //     this.uiDistances();
+        // }
+        this.setScore = true;
+        this.currentScore = this.distanceDino;
+        if (this.distanceDino > this.higherDist) {
+            this.higherDist = this.distanceDino;
+            this.showKeyboard(true);
+        }
+        this.stop();
+    }
+    showKeyboard(value){
+        document.querySelector('.keyboard').style.display = this.usePHP && value ? 'block' : 'none';
+    }
+    stop() {
+        this.audioOver.play();
+        const x = this.ctx.canvas.width/2;
+        const y = this.ctx.canvas.height/2 - 100/2;
+        this.ctx.drawImage(this.imgOver, //Game Over message
+            1294, //cut in sx
+            29, //cut in sy
+            381, 50, //size of the image inner
+            x  - 762/2, // x pos
+            y + 50, // y pos
+            762, 100 //size of the image outer
+        );
+        this.loadingImg = { // draw info of loading animation
+            sx: [
+                75.5,
+                147.5,
+                220,
+                292,
+                364,
+                436,
+                508
+            ]
+        };
+        clearInterval(this.interval); //stop this.start()
+        let tickGameOver = 0;
+        let frameLoadingImg = 0;
+        this.interval2 = setInterval(() => { // animation of loading
+            if (frameLoadingImg < this.loadingImg.sx.length) {
+                tickGameOver++;
+                if (tickGameOver >= 10) {
+                    this.ctx.drawImage(this.imgOver, //Game Over message 55
+                        this.loadingImg.sx[frameLoadingImg], //cut in sx
+                        132, //cut in sy
+                        68, 60, //size of the image inner
+                        x - 100/2, // x pos
+                        this.ctx.canvas.height/1.6, // y pos
+                        136, 120 //size of the image outer
+                    );
+                    frameLoadingImg++;
+                    tickGameOver = 0;
+                }
+            }
+        }, 1000/60);
+        this.getInitialsBtns();
+        if (frameLoadingImg >= this.loadingImg.sx.length) { // stop anim of loading
+            clearInterval(this.interval2);
+        }
+        setTimeout(() => {
+            document.onkeydown = e => {
+                this.spaceBool = false
+                game.dino.onKeyDown(e.code, this.spaceBool);
+                this.restart();
+            }
+        }, 1000);
+    }
+    restart() {
+        this.letters = [];
+        this.setScore = false;
+        this.distanceDino = 0;
+        this.tickBlinkRound = 0;
+        this.tickBlinkUiOf = 0;
+        this.uiBlinkBool = false;
+        this.bg = new Background(ctx);
+        this.dino = new Dino(ctx);
+        this.enemies = [];
+        this.clouds = [];
+        this.tickEnem = 0;
+        this.moon.restart();
+        this.showKeyboard(false);
+        this.start();
+    }
+    clear() {
+        this.dino.clearBullets();
+        this.enemies = this.enemies.filter(e => e.isVisible());
+        this.clouds = this.clouds.filter(c => c.isVisible());
+        this.ctx.clearRect(
+            0,
+            0,
+            this.ctx.canvas.width,
+            this.ctx.canvas.height
+            );
+    }
+    checkCollisions() {
+        const din = this.dino;
+        this.enemies.forEach(e => {
+            let colEnemX = (din.x + din.dw) >= e.x && (e.x + e.dw) >= din.x;
+            let colEnemY = (din.y + din.dh) >= e.y && din.y <= (e.y + e.dh);
+
+            if (colEnemX && colEnemY) {
+                this.gameOver();
+            }
+          din.bullets.forEach(b => {
+            // Check if the bullet is still on the screen
+            if (b.ballBoundingBox.x < this.ctx.canvas.width && b.ballBoundingBox.x > 0) {
+              // Check the flag before executing the collision detection logic
+              if (!b.hasCollided) {
+                let colBulEnemX = (b.ballBoundingBox.x + b.ballBoundingBox.w) >= e.x && (e.x + e.dw) >= b.ballBoundingBox.x;
+                let colBulEnemY = (b.ballBoundingBox.y + b.ballBoundingBox.h) >= e.y && b.ballBoundingBox.y <= (e.y + e.dh);
+                if (colBulEnemX && colBulEnemY) {
+                  if (this.enemyId === 0) {
+                    this.enemies = this.enemies.filter(e => {
+                      e.isVisible()});
+                  }
+                  if (e.enemyId > 0) {
+                    b.vx *= -3;
+                    // setTimeout(() => {
+                    //   b.vx = 10;
+                    // }, 1000);
+                  }
+                  // Set the flag to true to indicate that the bullet and enemy have collided
+                  b.hasCollided = true;
+                } 
+              }
+            }
+            // Reset the flag when the bullet is no longer on the screen
+            else {
+              b.hasCollided = false;
+            }
+            if (e.enemyId > 0 && b.vx < 0) {
+                let colBulDinX = (b.ballBoundingBox.x + b.ballBoundingBox.w) >= din.x && (din.x + din.dw) >= b.ballBoundingBox.x;
+                let colBulDinY = (b.ballBoundingBox.y + b.ballBoundingBox.h) >= din.y && b.ballBoundingBox.y <= (din.y + din.dh);
+                if (colBulDinX && colBulDinY) {
+                  this.gameOver();
+                }
+              }
+          });
+        });
+      }
+      
     addLeadingZeros(num, totalLength) {
         return String(num).padStart(totalLength, '0');
     }
@@ -79,7 +244,6 @@ class Game {
                 this.ctx.fillStyle = "#505050";
                 this.ctx.fillText(this.addLeadingZeros(this.uiBlinkDist, 5), canvas.width * 0.9, 80);
                 if (this.tickBlinkUiOf >= 50) {
-                    console.log(this.tickBlinkUiOf);
                     this.tickBlinkRound++;
                     this.tickBlinkUiOf = 0;
                 }
@@ -91,7 +255,10 @@ class Game {
         }
     }
     checkDistance() {
-        if (this.distanceDino % 400 === 0 && this.distanceDino > 100) {
+        if (this.distanceDino % 150 === 0 && this.distanceDino > 100 && this.distanceDino < 300) {
+            this.isNight();
+        }
+        if (this.distanceDino % 400 === 0 && this.distanceDino > 350) {
             this.isNight();
         }
         if (this.distanceDino < 15) {
@@ -102,41 +269,19 @@ class Game {
         } else if (this.distanceDino > 14 && this.distanceDino < 55) {
             this.distanceEnem = 100;
             this.distanceCloud = 100;
-            this.setSpeed(-20)
+            this.setSpeed(-17)
             this.enemLevel = 1;
         } else if (this.distanceDino > 54 && this.distanceDino < 100) {
-    
             this.distanceEnem = 100;
             this.distanceCloud = 100;
-            this.setSpeed(-20)
+            this.setSpeed(-22)
             this.enemLevel = 2;
-        } else if (this.distanceDino > 99 && this.distanceDino < 150) {
+        } else if (this.distanceDino > 99) {
             const disRandEnem = Math.floor(Math.random() * (90-50) + 50);
             const disRandCloud = Math.floor(Math.random() * (90-50) + 50);
             this.distanceEnem = disRandEnem;
             this.distanceCloud = disRandCloud;
-            this.setSpeed(-25);
-            this.enemLevel = 2;
-        } else if (this.distanceDino > 149 && this.distanceDino < 200) {
-            const disRandEnem = Math.floor(Math.random() * (90-40) + 40);
-            const disRandCloud = Math.floor(Math.random() * (90-30) + 30);
-            this.distanceEnem = disRandEnem;
-            this.distanceCloud = disRandCloud;
-            this.setSpeed(-30);
-            this.enemLevel = 2;
-        } else if (this.distanceDino > 199 && this.distanceDino < 250) {
-            const disRandEnem = Math.floor(Math.random() * (90-40) + 40);
-            const disRandCloud = Math.floor(Math.random() * (90-30) + 30);
-            this.distanceEnem = disRandEnem;
-            this.distanceCloud = disRandCloud;
-            this.setSpeed(-35);
-            this.enemLevel = 2;
-        } else if (this.distanceDino > 249) {
-            const disRandEnem = Math.floor(Math.random() * (90-40) + 40);
-            const disRandCloud = Math.floor(Math.random() * (90-30) + 30);
-            this.distanceEnem = disRandEnem;
-            this.distanceCloud = disRandCloud;
-            this.setSpeed(-45);
+            this.setSpeed(-27);
             this.enemLevel = 2;
         }
     }
@@ -165,111 +310,31 @@ class Game {
         this.clouds.forEach(c => {
             c.vx = speedVal / 2;
         });
-        this.moon.vx = speedVal / 5;
+        this.moon.vx = speedVal / 8;
     }  
-    gameOver() {
-        if (this.distanceDino > this.higherDist) {
-            this.higherDist = this.distanceDino;
-        }    
-        this.stop();
-    }
-    stop() {
-        this.audioOver.play();
-        const x = this.ctx.canvas.width/2;
-        const y = this.ctx.canvas.height/2 - 100/2;
-        this.ctx.drawImage(this.imgOver, //Game Over message
-            1294, //cut in sx
-            29, //cut in sy
-            381, 50, //size of the image inner
-            x  - 762/2, // x pos
-            y, // y pos
-            762, 100 //size of the image outer
-        );
-        this.loadingImg = {
-            sx: [
-                75.5,
-                147.5,
-                220,
-                292,
-                364,
-                436,
-                508
-            ]
-        };
-        clearInterval(this.interval);
-        let tickGameOver = 0;
-        let frameLoadingImg = 0;
-        this.interval2 = setInterval(() => {
-            console.log("ey")
-            if (frameLoadingImg < this.loadingImg.sx.length) {
-                tickGameOver++;
-                if (tickGameOver >= 10) {
-                    this.ctx.drawImage(this.imgOver, //Game Over message 55
-                        this.loadingImg.sx[frameLoadingImg], //cut in sx
-                        132, //cut in sy
-                        68, 60, //size of the image inner
-                        x - 100/2, // x pos
-                        this.ctx.canvas.height/1.6, // y pos
-                        136, 120 //size of the image outer
-                    );
-                    frameLoadingImg++;
-                    tickGameOver = 0;
-                }
-            }
-        }, 1000/60);
-        if (frameLoadingImg >= this.loadingImg.sx.length) {
-            clearInterval(this.interval2);
-        }
-        setTimeout(() => {
-            document.onkeydown = e => {
-                this.spaceBool = false
-                game.dino.onKeyDown(e.code, this.spaceBool);
-                clearInterval(this.interval2);
-                this.restart();
-            }
-        }, 300);
-    }
-    restart() {
-        this.distanceDino = 0;
-        this.tickBlinkRound = 0;
-        this.tickBlinkUiOf = 0;
-        this.uiBlinkBool = false;
-        this.bg = new Background(ctx);
-        this.dino = new Dino(ctx);
-        this.enemies = [];
-        this.clouds = [];
-        this.tickEnem = 0;
-        this.moon.restart();
-        this.start();
-    }
-    clear() {
-        this.enemies = this.enemies.filter(e => e.isVisible());
-        this.clouds = this.clouds.filter(c => c.isVisible());
-        this.ctx.clearRect(
-            0,
-            0,
-            this.ctx.canvas.width,
-            this.ctx.canvas.height
-            );
-    }
-    checkCollisions() {
-        const din = this.dino;
-        
-        this.enemies.forEach(e => {
-
-            din.boundingBoxes.forEach(db => {
-                const colX = (db.x + db.w) >= e.x && (e.x + e.dw) >= db.x;
-                const colY = (db.y + db.h) >= e.y && db.y <= (e.y + e.dh);
-    
-                if (colX && colY) {
-                    this.gameOver();
-                }
-            });
-        });
-    }
     initListeners() {
         document.onkeydown = e => {
             game.dino.onKeyDown(e.code, this.spaceBool);
+        };
+        document.onkeyup = e => {
+            game.dino.onKeyUp(e.code, this.spaceBool);
+        };
+    }
+    getInitialsBtns() {
+        const buttons = document.querySelectorAll('.kbc-button');
+        let clicks = 0;
+    
+        for (const button of buttons) {
+            button.addEventListener('click', () => {
+                clicks++;
+                if (clicks <= 3) {
+                this.letters.push(button.innerHTML);
+                }
+                if (clicks === 3) {
+                this.initials = this.letters.join('');
+                console.log(`Initials: ${this.initials}`);
+                }
+            });
         }
     }
     addEnemy() {
@@ -288,6 +353,7 @@ class Game {
             }
             this.enemies.push(enem);
             this.tickEnem = 0;
+            this.enemyId = enem.enemyId;
         }
     }
     addCloud() {

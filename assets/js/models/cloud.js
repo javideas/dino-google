@@ -31,7 +31,7 @@ class Cloud { //TODO: include in game.js
     }
     draw() {
         if (this.night === true) {
-            this.ctx.filter = "invert(100%)";
+
             this.ctx.drawImage(this.img, 
                 166, //cut in sx
                 this.sy, //cut in sy
@@ -40,7 +40,7 @@ class Cloud { //TODO: include in game.js
                 this.y0, // y pos
                 this.dw, this.dh //size of the image outer
             );
-            this.ctx.filter = "none";
+
         } else {
             this.ctx.drawImage(this.img, 
                 166, //cut in sx

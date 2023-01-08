@@ -3,7 +3,7 @@ class Enemy { //TODO: adapt bounding box tpedoractyl
         this.ctx = ctx;
         this.x = this.ctx.canvas.width;
         this.y = 0;
-        this.yPos = [170, 270, 330];
+        this.yPos = [100, 230, 300];
         this.y0 = this.yPos[Math.floor(Math.random() * this.yPos.length)];//350;
         this.img = new Image();
         this.img.src = "img/dino-sprites.png";
@@ -92,7 +92,7 @@ class Enemy { //TODO: adapt bounding box tpedoractyl
                 dh: [244],
                 y: [230]
             }  
-        ]
+        ];
         this.enemyId = 0;
         this.img.frames = 2;
         this.img.framesIndex = 0;
@@ -108,6 +108,7 @@ class Enemy { //TODO: adapt bounding box tpedoractyl
 
         this.night = false;
         this.devCol = false;
+
     }
     invertColor(value) {
         this.night = value;
@@ -116,8 +117,7 @@ class Enemy { //TODO: adapt bounding box tpedoractyl
         this.y = this.img.enemies[this.enemyId].y[this.img.framesIndex];
         this.dw = this.img.enemies[this.enemyId].dw[this.img.framesIndex];
         this.dh = this.img.enemies[this.enemyId].dh[this.img.framesIndex];
-
-        if (this.devCol) { // developer mode to show colored boundinx boxes for collisions
+        if (this.devCol) { // developer mode to show colored bounding boxes for collisions
             this.ctx.fillStyle = "red";
             this.ctx.fillRect(this.x,
                 this.img.enemies[1].y[this.img.framesIndex],

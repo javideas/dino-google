@@ -10,11 +10,10 @@ class Moon {
         this.swhrel = 1.8;
         this.dw = this.sw * this.swhrel;
         this.dh = this.sh * this.swhrel;
-        this.vx = -10;
+        this.vx = -5;
         this.img = new Image();
         this.img.src = "img/dino-sprites.png";
 
-        this.img.frames = 6;
         this.img.framesIndex = 0;
         this.tick = 0;
 
@@ -23,22 +22,22 @@ class Moon {
 
         this.mPhases = {
                 sx: [
-                    954,
-                    994,
-                    1034,
-                    1074,
-                    1154,
-                    1194,
-                    1234
+                    956,
+                    996,
+                    1036,
+                    1076,
+                    1156,
+                    1196,
+                    1236
                 ],
                 sw: [
-                    40,
-                    40,
-                    40,
-                    80,
-                    40,
-                    40,
-                    40
+                    38,
+                    38,
+                    38,
+                    78,
+                    38,
+                    38,
+                    38
                 ],
                 x: [
                     0,
@@ -59,12 +58,16 @@ class Moon {
                     60
                 ]
             };
+        this.img.frames = this.mPhases.sx.length;
     }
     restart() {
-        this.x = this.ctx.canvas.width * 0.95;
-        this.img.framesIndex = 0;
-        this.vx = -10;
         this.addMoon = false;
+        if (this.addMoon === false) {
+            this.x = this.ctx.canvas.width * 0.95;
+            this.img.framesIndex = 0;
+            this.vx = -5;
+            this.tick = 0;
+        }
     }
     draw() {
         if (this.addMoon === true) {
@@ -85,7 +88,7 @@ class Moon {
             this.tick = 0;
             this.img.framesIndex++;
             if (this.img.framesIndex > this.img.frames - 1) {
-                this.addMoon = false;
+                this.restart();
             }
         }
     }
