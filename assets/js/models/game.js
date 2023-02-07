@@ -35,6 +35,7 @@ class Game {
         this.currentScore = 0;
         
     }
+    
     start() { // inmunity; fireball;
         this.currentScore = 0;
         this.moon.restart();
@@ -200,7 +201,9 @@ class Game {
                 if (colBulEnemX && colBulEnemY) {
                   if (this.enemyId === 0) {
                     this.enemies = this.enemies.filter(e => {
-                      e.isVisible()});
+                        e.isVisible();
+                    });
+                    
                   }
                   if (e.enemyId > 0) {
                     b.vx *= -3;
